@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EventThrottle Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4e8ef7">
+    <script src="bundle.js" type="application/javascript"></script>
+
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            font-size: 12px;
+            margin: 80px;
+        }
+
+        textarea {
+            width: 600px;
+        }
+
+        textarea[_idle] {
+            color: white;
+            background-color: black;
+        }
+
+        button {
+            font-size: 11px;
+        }
+
+        sup {
+            color: red;
+        }
+
+        p {
+            max-width: 600px;
+            text-align: justify;
+        }
+
+        p[divider] {
+            padding-bottom: 30px;
+            border-bottom: solid 1px #afafaf;
+        }
+
+        p b {
+            color: darkslategrey;
+        }
+
+        p i {
+            color: darkslategrey;
+            font-weight: bolder;
+        }
+
+        table {
+            border: none;
+            width: 600px;
+        }
+
+        td {
+            border: 1px solid #afafaf;
+            width: 80px;
+        }
+
+        span[label] {
+            color: darkslategrey;
+            font-weight: bolder;
+            margin-right: 10px;
+        }
+
+        span[value] {
+            text-align: left;
+        }        
+    </style>
+
+</head>
+
+<body>
+    <h1>EventThrottle Demo</h1>
+    <textarea _idle name="" id="textArea" cols="30" rows="10"></textarea>
+    <table border="1">
+        <tr>
+            <td><span label>Character Count:</span><span value id="char-count">0</span></td>
+            <td><span label>Word Count:</span><span value id="word-count">0</span></td>
+        </tr>
+    </table>
+    <p>
+        This demonstration uses two <b>EventThrottle</b> instances:
+    </p>
+    <p>
+        The first specifies a <b>throttle duration</b> of 500 milliseconds and raises an event used to calculate and update
+        the character and word counts of the text-area <i>as the user types</i>.
+    </p>
+    <p divider>
+        The second specifies a <b>throttle duration</b> of 1,500 milliseconds and the <b>suppress active</b><sup>1</sup> option, and raises an event used to restyle the text-area <i>after the user has stopped typing</i>.
+    </p>
+    <p>
+        <sup>1</sup> Setting the <b>suppressActive</b> property of the <b>EventThrottleOptions</b> object used to configure the <b>EventThrottle</b> instance to <b>true</b> results in only the last of a sequence
+        of upstream (source) events being forwarded. In practise, this means that the <b>EventThrottle</b> instance will only
+        dispatch a throttled event if no additional upstream events were raised after the active event was queued for processing.
+    </p>
+</body>
+
+</html>
