@@ -89,7 +89,7 @@ class EventThrottleDefault
     private throttle: EventThrottle;
 
     constructor() {
-        this.throttle = new ScrollListener.Create((s, e) => { this.onDownstreamEvent(s, e) });
+        this.throttle = new EventThrottle((s, e) => { this.onDownstreamEvent(s, e) });
         document.getElementById("sourceElement").addEventListener("keydown", (e) => { this.throttle.registerEvent(e); });
     }
     
@@ -110,7 +110,7 @@ class EventThrottleCustomDuration
     private throttle: EventThrottle;
 
     constructor() {
-        this.throttle = new ScrollListener.Create(target, (s, e) => { this.onDownstreamEvent(s, e) }, { throttleDuration: 300 });
+        this.throttle = new EventThrottle(target, (s, e) => { this.onDownstreamEvent(s, e) }, { throttleDuration: 300 });
         document.getElementById("sourceElement").addEventListener("keydown", (e) => { this.throttle.registerEvent(e); });
     }
     
@@ -132,7 +132,7 @@ class EventThrottleSupressActive
     private throttle: EventThrottle;
 
     constructor() {
-        this.throttle = new ScrollListener.Create(target, (s, e) => { this.onDownstreamEvent(s, e) }, { throttleDuration: 1500, suppressActive: true });
+        this.throttle = new EventThrottle(target, (s, e) => { this.onDownstreamEvent(s, e) }, { throttleDuration: 1500, suppressActive: true });
         document.getElementById("sourceElement").addEventListener("keydown", (e) => { this.throttle.registerEvent(e); });
     }
     
