@@ -1,6 +1,6 @@
 {
   "name": "@brycemarshall/event-throttle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A helper class that throttles events streaming from a specific event source.",
   "repository": {
     "type": "git",

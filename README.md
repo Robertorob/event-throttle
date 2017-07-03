@@ -27,6 +27,7 @@ http://plnkr.co/nC6ter
  * @function EventThrottleCallbackFunction
  * @param sender - The @type {EventThrottle} that dispatched the event.
  * @param sourceEvent - The source  @type {Event}.
+ * @param state - Optional state to be passed to the downstream event handler.
  */
 export declare type EventThrottleCallbackFunction = (sender: EventThrottle, sourceEvent: Event) => void;
 /**
@@ -68,8 +69,10 @@ export declare class EventThrottle {
     flush(): void;
     /**
      * @function registerEvent - Registers an upstream source event to be potentially queued for downstream processing.
+     * @param sourceEvent - The source Event.
+     * @param state - Optional state to be passed to the downstream event handler.
      */
-    registerEvent(e?: Event): void;
+    registerEvent(e?: Event, state?: any): void;
 }
 
 
