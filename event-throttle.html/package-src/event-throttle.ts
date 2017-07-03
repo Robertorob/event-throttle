@@ -2,8 +2,9 @@
  * @function EventThrottleCallbackFunction
  * @param sender - The @type {EventThrottle} that dispatched the event.
  * @param sourceEvent - The source  @type {Event}.
+ * @param state - Optional state to be passed to the downstream event handler.
  */
-export type EventThrottleCallbackFunction = (sender: EventThrottle, sourceEvent: Event) => void;
+export type EventThrottleCallbackFunction = (sender: EventThrottle, sourceEvent?: Event, state?: any) => void;
 
 /**
  * Specifies EventThrottle configuration options.
@@ -32,6 +33,8 @@ export class EventThrottle {
     private _enabled: boolean = true;
     /** @internal */
     private _last: Event = null;
+    /** @internal */
+    private _lastState: any = null;    
 
     /**
      * @constructor - Creates a new instance of the @type {EventThrottle} class.
@@ -87,43 +90,47 @@ export class EventThrottle {
 
     /**
      * @function registerEvent - Registers an upstream source event to be potentially queued for downstream processing.
+     * @param sourceEvent - The source Event.
+     * @param state - Optional state to be passed to the downstream event handler.
      */
-    public registerEvent(e?: Event) {
+    public registerEvent(e?: Event, state?: any) {
         if (this._fn === null || !this._enabled) return;
 
         if (this._throtDur == 0) {
             this._backlog = 1;
-            this.processEvent(1, e)
+            this.processEvent(1, e, state)
             this._backlog = 0;
         }
         else {
             this._last = e;
+            this._lastState = state;
             if (++this._backlog == 1)
-                this.queueEvent(e);
+                this.queueEvent(e, state);
         }
     }
 
     /** @internal */
-    private queueEvent(e: Event) {
+    private queueEvent(e: Event, state: any) {
         setTimeout((backlog: number) => {
-            this.processEvent(backlog, e);
+            this.processEvent(backlog, e, state);
         }, this._throtDur, this._backlog);
     }
 
     /** @internal */
-    private processEvent(backlog: number, e: Event) {
+    private processEvent(backlog: number, e: Event, state: any) {
         // Return if disabled or if the backlog has otherwise been cleared by an invocation of flush() since the timeout was queued.
         if (this._backlog == 0)
             return;
 
         this._backlog -= backlog;
         if (!this._suppressActive || this._backlog == 0)
-            this._fn(this, e);
+            this._fn(this, e, state);
 
         // If there have been events since the timeout was queued, queue another to ensure a downstream event always fires on the final source event.
         if (this._backlog > 0) {
-            this.queueEvent(this._last);
+            this.queueEvent(this._last, this._lastState);
             this._last = null;
+            this._lastState = null;
         }
     }
 }

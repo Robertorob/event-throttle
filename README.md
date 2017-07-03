@@ -100,6 +100,28 @@ class EventThrottleDefault
 
 ```
 
+# Usage - Passing State
+
+An example of passing state to the downstream event handler.
+
+```ts
+class EventThrottleState
+{
+    private throttle: EventThrottle;
+    private _state = "My State";
+
+    constructor() {
+        this.throttle = new EventThrottle((source, evt, state) => { this.onDownstreamEvent(source, evt, state) });
+        document.getElementById("sourceElement").addEventListener("keydown", (evt) => { this.throttle.registerEvent(evt, this._state); });
+    }
+    
+    onDownstreamEvent (sender: EventThrottleOptions, sourceEvent: Event, state: string) {
+        console.log("Downstream event fired - state = '" + state + "'");
+    }
+}
+
+```
+
 # Usage - Custom Throttle Duration
 
 An example of throttling an upstream event source using a custom throttle duration of 300ms.
