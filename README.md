@@ -7,7 +7,7 @@ OR to guanrantee that a downstream event is raised to handle ONLY the LAST in ea
 
 A sequence is defined as any series of events with no more than a throttle duration interval between each sequential event.
 
-Conceptually, EventSource can be be loosely considered to "slow down" events from an upstream event source, although in practise it actually ensures that downstream events are 
+Conceptually, EventThrottle can be be loosely considered to "slow down" events from an upstream event source, although in practise it actually ensures that downstream events are 
 dispatched to EventThrottle clients with a maximum frequency (the throttle duration, specified in milliseconds). It does this by dispatching only one upstream event
 per throttle duration period whilst also guaranteeing that the last event in each upstream sequence will ALWAYS be dispatched to the downstream handler.
 
@@ -146,7 +146,7 @@ class EventThrottleCustomDuration
 
 ```
 
-# Usage - Supress Active (Last Event in Sequence Only)
+# Usage - Suppress Active (Last Event in Sequence Only)
 
 An example of throttling an upstream event source to ensure that ONLY the last event in any upstream sequence is dispatched to the downstream handler.
 In this example, a sequence is defined as any series of events with no more than a 1500ms interval between sequential events.
