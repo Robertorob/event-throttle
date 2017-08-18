@@ -27,7 +27,7 @@ export class EventThrottleTest {
         }
     }
 
-    onUpdateStats(sender: EventThrottleOptions, sourceEvent: Event) {
+    onUpdateStats(sender: EventThrottle, sourceEvent: Event) {
         let s = this.textArea.value;
         this.wordCountEl.innerHTML = this.countWords(s).toString();
         this.charCountEl.innerHTML = s.length.toString();
@@ -48,7 +48,7 @@ export class EventThrottleTest {
         }
     }
     
-    onFormat(sender: EventThrottleOptions, sourceEvent: Event) {
+    onFormat(sender: EventThrottle, sourceEvent: Event) {
         this.textArea.attributes.setNamedItem(this.attr);
         this.attr = null;
     }

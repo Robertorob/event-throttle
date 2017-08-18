@@ -1,25 +1,41 @@
 /**
- * @function EventThrottleCallbackFunction
- * @param sender - The @type {EventThrottle} that dispatched the event.
- * @param sourceEvent - The source  @type {Event}.
- * @param state - Optional state to be passed to the downstream event handler.
+ * The callback function that is invoked by an EventThrottle instance to dispatch a throttled upstream event to a downstream handler.
+ * @param sender The EventThrottle that dispatched the event.
+ * @param sourceEvent The source  event.
+ * @param state Optional state to be passed to the downstream event handler.
  */
-export type EventThrottleCallbackFunction = (sender: EventThrottle, sourceEvent?: Event, state?: any) => void;
+export type EventThrottleCallbackFunction = (sender: EventThrottle, sourceEvent?: any, state?: any) => void;
 
 /**
  * Specifies EventThrottle configuration options.
- * @interface EventThrottleOptions
- * @property {number} throttleDuration - When specified, defines the duration (in milliseconds) of the minimum delay in between 
-    processing downstream events (the default is 150 milliseconds).
- * @property {boolean} suppressActive - If true, results in only the last of a sequence of upstream (source) events being fired.
- * In practise, this means that the @type {EventThrottle} instance wil only dispatch a throttled event if no additional upstream events
- * were raised after the active event was queued for processing.
  */
 export interface EventThrottleOptions {
+    /**
+     * When specified, defines the duration (in milliseconds) of the minimum delay in between processing downstream events (the default is 150 milliseconds).
+     */
     throttleDuration?: number;
+    /**
+     * Specifies EventThrottle configuration options.
+     * If true, results in only the last of a sequence of upstream (source) events being fired.
+     * In practise, this means that the EventThrottle instance wil only dispatch a throttled event if no additional upstream events
+     * were raised after the active event was queued for processing.
+     */
     suppressActive?: boolean;
 }
 
+/**
+ * A helper class that throttles events streaming from a specific event source.
+ * EventThrottle can be used to decrease the "density" of events from any upstream event source and therefore reduce the processing burden on attached downstream event handlers,
+ * OR to guanrantee that a downstream event is raised to handle ONLY the LAST in each sequence of upstream source events.
+ * 
+ * A sequence is defined as any series of events with no more than a throttle duration interval between each sequential event.
+ * 
+ * Remarks:
+ * 
+ * Conceptually, EventThrottle can be be loosely considered to "slow down" events from an upstream event source, although in practise it actually ensures that downstream events are 
+ * dispatched to EventThrottle clients with a maximum frequency (the throttle duration, specified in milliseconds). It does this by dispatching only one upstream event
+ * per throttle duration period whilst also guaranteeing that the last event in each upstream sequence will ALWAYS be dispatched to the downstream handler.
+ */
 export class EventThrottle {
     /** @internal */
     private _fn: EventThrottleCallbackFunction;
@@ -32,14 +48,14 @@ export class EventThrottle {
     /** @internal */
     private _enabled: boolean = true;
     /** @internal */
-    private _last: Event = null;
+    private _last: any = null;
     /** @internal */
-    private _lastState: any = null;    
+    private _lastState: any = null;
 
     /**
-     * @constructor - Creates a new instance of the @type {EventThrottle} class.
+     * Creates a new instance of the EventThrottle class.
      * @param callbackFunction - the function for handling throttled downstream events.
-     * @param options - Optional configuration values in the form of an object implementing @type {EventThrottleOptions}.
+     * @param options - Optional configuration values in the form of an object implementing EventThrottleOptions.
      */
     constructor(callbackFunction: EventThrottleCallbackFunction, options?: EventThrottleOptions) {
         if (!callbackFunction) throw new Error("EventThrottle: callbackFunction cannot be null.");
@@ -53,22 +69,21 @@ export class EventThrottle {
     }
 
     /**
-     * @property throttled - Gets the number of source events that have been suppressed since the last downstream event was dispatched by this instance.
+     * Gets the number of source events that have been suppressed since the last downstream event was dispatched by this instance.
      */
     public get throttled(): number {
         return this._backlog;
     }
 
     /**
-     * @property enabled - Returns true if 1 or more source events have been suppressed since the last downstream event was dispatched by this instance.
+     * Returns true if 1 or more source events have been suppressed since the last downstream event was dispatched by this instance.
      */
     public get isThrottling(): boolean {
         return this._backlog > 0;
     }
 
     /**
-     * @property enabled - Gets or sets the enabled state of the @type {EventThrottle} instance.
-     * Setting enabled to 'false' will automatically flush the @type {EventThrottle} instance.
+     * Gets or sets the enabled state of the EventThrottle instance. Setting enabled to 'false' will automatically flush the EventThrottle.
      */
     public get enabled(): boolean {
         return this._enabled;
@@ -81,7 +96,7 @@ export class EventThrottle {
     }
 
     /**
-     * @function flush - Flushes any suppressed source events that have not yet been processed.
+     * Flushes any suppressed source events that have not yet been processed.
      */
     public flush(): void {
         this._backlog = 0;
@@ -89,11 +104,11 @@ export class EventThrottle {
     }
 
     /**
-     * @function registerEvent - Registers an upstream source event to be potentially queued for downstream processing.
+     * Registers an upstream source event to be potentially queued for downstream processing.
      * @param sourceEvent - The source Event.
      * @param state - Optional state to be passed to the downstream event handler.
      */
-    public registerEvent(e?: Event, state?: any) {
+    public registerEvent(e?: any, state?: any) {
         if (this._fn === null || !this._enabled) return;
 
         if (this._throtDur == 0) {
@@ -110,14 +125,14 @@ export class EventThrottle {
     }
 
     /** @internal */
-    private queueEvent(e: Event, state: any) {
+    private queueEvent(e: any, state: any) {
         setTimeout((backlog: number) => {
             this.processEvent(backlog, e, state);
         }, this._throtDur, this._backlog);
     }
 
     /** @internal */
-    private processEvent(backlog: number, e: Event, state: any) {
+    private processEvent(backlog: number, e: any, state: any) {
         // Return if disabled or if the backlog has otherwise been cleared by an invocation of flush() since the timeout was queued.
         if (this._backlog == 0)
             return;

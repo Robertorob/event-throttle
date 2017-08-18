@@ -4,7 +4,7 @@
         "experimentalDecorators": true,
         "stripInternal": true,
         "target": "es5",
-        "module": "umd",
+        "module": "commonjs",
         "moduleResolution": "classic",
         "removeComments": false,
         "sourceMap": false,
