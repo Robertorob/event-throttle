@@ -12,7 +12,7 @@
         "pretty": true
     },
     "include": [
-        "./event-throttle.html/package-src"
+        "../event-throttle.html/package-src"
     ],
     "exclude": [
         ".vscode",
